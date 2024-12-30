@@ -1,0 +1,2 @@
+# from inside the public directory
+python3 -m http.server 8888
