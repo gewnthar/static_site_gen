@@ -1,5 +1,8 @@
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
+        # Allow empty value only when the tag is "img"
+        if tag != "img" and not value and not children:
+            raise ValueError("Node must have either a value or children.")
         self.tag = tag
         self.value = value
         self.children = children
@@ -19,24 +22,30 @@ class HTMLNode:
     def __repr__(self):
         return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
 
-
 class LeafNode(HTMLNode):
     def __init__(self, tag, value, props=None):
+        # Allow empty 'value' only for 'img' tag in both LeafNode and HTMLNode if needed
+        if tag != "img" and (value is None or value == ""):
+            raise ValueError("LeafNode must have a non-None or non-empty value")
         super().__init__(tag, value, None, props)
 
     def to_html(self):
+        # If the value is None (which shouldn't happen here), raise an error
         if self.value is None:
             raise ValueError("Invalid HTML: no value")
         if self.tag is None:
-            return self.value
+            return self.value  # Just return the value if no tag is specified
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
 
     def __repr__(self):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
 
-
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props=None):
+        if not tag:  # Ensure the ParentNode has a tag
+            raise ValueError("ParentNode must have a tag")
+        if children is None:  # ParentNode must have children
+            raise ValueError("ParentNode must have children")
         super().__init__(tag, None, children, props)
 
     def to_html(self):
@@ -51,3 +60,4 @@ class ParentNode(HTMLNode):
 
     def __repr__(self):
         return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
+
