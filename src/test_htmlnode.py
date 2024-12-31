@@ -101,6 +101,17 @@ class TestHTMLNode(unittest.TestCase):
             "<h2><b>Bold text</b>Normal text<i>italic text</i>Normal text</h2>",
         )
 
+    def test_leafnode_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            node = LeafNode("p", None)  # Value is None
+
+    def test_parentnode_raises_no_tag_error(self):
+        with self.assertRaises(ValueError):
+            node = ParentNode(None, [LeafNode("span", "child")])  # No tag provided
+
+    def test_parentnode_raises_no_children_error(self):
+        with self.assertRaises(ValueError):
+            node = ParentNode("div", None)  # No children provided
 
 if __name__ == "__main__":
     unittest.main()
