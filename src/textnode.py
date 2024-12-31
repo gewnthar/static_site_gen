@@ -44,3 +44,23 @@ def text_node_to_html_node(text_node):
     else:
         raise ValueError(f"Unknown text type: {text_node.text_type}")
 
+def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            # Non-text nodes are added as-is
+            new_nodes.append(node)
+            continue
+
+        parts = node.text.split(delimiter)
+        if len(parts) % 2 == 0:
+            raise ValueError(f"Unmatched delimiter '{delimiter}' in text: {node.text}")
+
+        for i, part in enumerate(parts):
+            if part:
+                if i % 2 == 0:  # Even index: original text type
+                    new_nodes.append(TextNode(part, TextType.TEXT))
+                else:  # Odd index: new text type
+                    new_nodes.append(TextNode(part, text_type))
+
+    return new_nodes
